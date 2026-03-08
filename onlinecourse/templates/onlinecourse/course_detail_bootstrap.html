@@ -8,6 +8,7 @@
 <body>
     <div class="container mt-5">
         
+        <!-- رسالة التهنئة ودرجة الطالب بعد الامتحان -->
         {% if grade is not None %}
             <div class="alert alert-success text-center shadow-sm">
                 <h1 class="display-4">Congratulations!</h1>
@@ -15,13 +16,16 @@
                 <h3 class="mt-3">Your Final Score: <span class="badge badge-success">{{ grade }} / {{ total_score }}</span></h3>
             </div>
         {% endif %}
-        <div class="card shadow">
+
+        <!-- معلومات الكورس -->
+        <div class="card shadow mb-4">
             <div class="card-body">
                 <h2 class="card-title text-primary">{{ course.name }}</h2>
                 <p class="card-text text-muted">{{ course.description }}</p>
             </div>
         </div>
 
+        <!-- نموذج الأسئلة -->
         <form id="quiz-form" action="{% url 'onlinecourse:submit' course.id %}" method="post">
             {% csrf_token %}
             
@@ -30,22 +34,20 @@
                     <h4>Lesson {{ forloop.counter }}: {{ lesson.title }}</h4>
                 </div>
                 
-                {% for question in course.question_set.all %}
-                <div class="card mt-3 border-left-primary">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="mb-0">{{ question.question_text }}</h5>
+                {% for question in lesson.question_set.all %}
+                    <div class="card mt-3 border-left-primary shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">{{ question.question_text }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for choice in question.choice_set.all %}
+                                <div class="form-check py-1">
+                                    <input type="checkbox" name="choice" class="form-check-input" id="choice{{ choice.id }}" value="{{ choice.id }}">
+                                    <label class="form-check-label" for="choice{{ choice.id }}">{{ choice.choice_text }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <div class="card-body">
-                        {% for choice in question.choice_set.all %}
-                            <div class="form-check py-1">
-                                <label class="form-check-label">
-                                    <input type="checkbox" name="choice" class="form-check-input" id="{{choice.id}}" value="{{choice.id}}">
-                                    {{ choice.choice_text }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
                 {% endfor %}
             {% endfor %}
 
